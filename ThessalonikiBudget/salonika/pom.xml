@@ -1,0 +1,15 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>salonikaBudget</groupId>
+  <artifactId>salonika</artifactId>
+  <version>1.0</version>
+  <name>ThessalonikiBudget</name>
+  <dependencies>
+  <dependency><groupId>com.ui4j</groupId><artifactId>ui4j-ide</artifactId><version>1.2.0</version><scope>compile</scope></dependency><dependency><groupId>org.jfxtras</groupId><artifactId>openjfx-monocle</artifactId><version>1.8.0_20</version><scope>compile</scope></dependency><dependency><groupId>mysql</groupId><artifactId>mysql-connector-java</artifactId><version>5.1.36</version><scope>compile</scope></dependency><dependency><groupId>javax.mail</groupId><artifactId>javax.mail-api</artifactId><version>1.5.3</version><scope>compile</scope></dependency><dependency><groupId>com.sun.mail</groupId><artifactId>javax.mail</artifactId><version>1.5.3</version><scope>compile</scope></dependency>
+ <dependency><groupId>elod.tool.msg</groupId>
+  <artifactId>Messenger2</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+
+  </dependencies>
+</project>
