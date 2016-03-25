@@ -7,7 +7,6 @@ package elod.harvest.bugets.thessaloniki;
 /*
 "<table style=\"width:100%\"><tr><td>Jill</td><td>Smith</td><td>50</td></tr><tr><td>Eve</td><td>Jackson</td><td>94</td></tr></table> "
  */
-import org.hyperic.sigar.SigarException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,7 +40,7 @@ import com.ui4j.api.dom.Element;
 import com.ui4j.api.dom.Select;
 
 import elod.tool.msg.Notifications;
-//import elod.tool.msn.Notifications;
+import org.hyperic.sigar.SigarException;
 
 
 public class ScrapingThessalonikiBudget {
@@ -60,8 +59,8 @@ public class ScrapingThessalonikiBudget {
 	
 	static final long minExpSize=150*1024;
 	static final long minIncSize=30*1024;
-static final String Budget_Url="https://gaiacrmkea.c-gaia.gr/city_thessaloniki/index.php";
-//"http://www.thessaloniki.gr/egov/budget.html";
+static final String Budget_Url="http://www.thessaloniki.gr/egov/budget.html";
+//"https://gaiacrmkea.c-gaia.gr/city_thessaloniki/index.php";
 
 	static final int downloadTTL=5;
 	
@@ -94,7 +93,7 @@ static final String Budget_Url="https://gaiacrmkea.c-gaia.gr/city_thessaloniki/i
 	
 	public static void getData(int typeIndex, String fileName,Page page) {
 	     // get the DOM
-        Document document = page.getDocument();//.query("frame").getDocument();//.getContentDocument();
+        Document document = page.getDocument().query("frame").getDocument();//.getContentDocument();
          // find the year combobox
 System.out.println(document.getBody());
         Select year = document
@@ -264,14 +263,11 @@ try{
         		//Default dir will be used.
         		incomeDir=new File(workingDir);
         		System.out.println("Error while Creating Income Directory. Default Directory will be used: "+incomeDir.toString());
-//        		notif.addError("Error while Creating Directory. Default Directory will be used: "+incomeDir.toString());
         		notif.addMessage("Error while Creating Income Directory. Default Directory will be used: "+incomeDir.toString(), "3", false);
         		FileWriter writer = new FileWriter(logDir+logFile,true); //the true will append the new data
         		Date now=new Date();
         		errorMessage.append(now+" "+"Error while Creating Directory. Default Directory will be used: "+incomeDir.toString()+"\n");
         		writer.append(now+" "+"Error while Creating Directory. Default Directory will be used: "+incomeDir.toString()+"\n");
-//        		messenger.write("Error,"+dateFormat.format(new Date())+",Error while Creating Directory. Default Directory will be used: "+incomeDir.toString()+"\n");
-//        		messenger.flush();
         		//set the sentMail flag to true, now an email will be sent
   				sentMail=true;
         		writer.flush();
@@ -307,9 +303,6 @@ try{
         		
         	}
         	System.out.println("File with expenses saved at"+expesnsesDir+"/"+fileName+".csv");
-//        	messenger.write("Success,"+dateFormat.format(new Date())+",File with expenses saved at"+expesnsesDir+"/"+fileName+".csv\n");
-//        	messenger.flush();
-//        	notif.addSuccess("File with expenses saved at"+expesnsesDir+"/"+fileName+".csv");
         	notif.addMessage("File with expenses saved at"+expesnsesDir+"/"+fileName+".csv","1",false);
         	notif.runInsert();
         }catch(Exception e){
@@ -317,9 +310,6 @@ try{
         	Date now=new Date();
         	errorMessage.append(now+" "+"Error while Creating Directory. Default Directory will be used: "+incomeDir.toString()+"\n");
 			writer.append(now+" "+"Error while creating the expenses file. "+e.getMessage()+"\n");
-//			messenger.write("Error,"+dateFormat.format(new Date())+",Error while creating the expenses file. "+e.getMessage()+"\n");
-//			messenger.flush();
-//			notif.addError("Error while creating the expenses file. "+e.getMessage());
 			notif.addMessage("Error while creating the expenses file. "+e.getMessage(),"3",false);
 			notif.runInsert();
 			//set the sentMail flag to true, now an email will be sent
@@ -425,31 +415,21 @@ try{
 	}
 	
 	public static void main(String[] args) throws Exception {   
-		//desk
-//		args=new String[]{"/media/ilias/4f3fe2dc-233f-4e74-a059-cce940316dbd/home/ilias/dd/Untitled Folder","/media/ilias/Data/Cloud/Dropbox/SettingFiles/Authantication/EmailAuthentication.txt",
-//				"/media/ilias/Data/Cloud/Dropbox/SettingFiles/Authantication/Messenger/CkanThessalonikiBudgetMessenger.txt",
-//				"/media/ilias/Data/Cloud/Dropbox/SettingFiles/Messenger/Sigar_lib"};
-		//laptop
-		args=new String[]{"/home/ilias/dd/temp/thessTest",
-				"/home/ilias/Documents/Cloud/Dropbox/SettingFiles/Authantication/EmailAuthentication.txt",
-				"/home/ilias/Documents/Cloud/Dropbox/SettingFiles/Authantication/Messenger/CkanThessalonikiBudgetMessenger.txt",
-				"/home/ilias/Documents/Cloud/Dropbox/SettingFiles/Messenger/Sigar_lib"};
-		
+		//create a new messaging object
 		 notif=new Notifications("13","12", "Skaros","Thessaloniki Budget Harvester","SkarosIlias");
-//		 System.setProperty("org.hyperic.sigar.path","/home/ilias/Downloads/lib");
-	//	notif.loadLibs(); 
-		 
+	 
 		if(args.length<3){
 			System.out.println("Usage java -jar ThessBudget.jar [root/dir/to/save/files] [email setting file path] [messenger DB settings] [Sigar lib folder]");
-//			messenger.write("Error,"+dateFormat.format(new Date())+",Usage java -jar ThessBudget.jar [root/dir/to/save/files] [email setting file path]\n");
-//			messenger.close();
 			System.exit(1);
 		}
+		//set up the Sigar library directory
 		System.setProperty("org.hyperic.sigar.path",args[3]);
+		
 		if(!new File(args[2]).exists()){
 			System.out.println("messenger settings file doesnt exist");
 			
 		}else{
+			//set up the messaging settings
 			notif.DbCredentials(new File(args[2]));
 			
 		}
@@ -466,8 +446,10 @@ try{
 		
 		//read the email credential file
 		File EmailCreadentialFile=new File(args[1]);
+		
 		//the default recipient
 		RECIPIENT=new String[]{"skaros.ilias@gmail.com"};
+		
 		if(EmailCreadentialFile.isFile()){
 			BufferedReader fr;
 			fr = new BufferedReader(new FileReader(EmailCreadentialFile));
@@ -494,15 +476,12 @@ try{
 			fr.close();
 		}
 		else{
-			//email settings file doesnot exist. Terminating
+			//email settings file doesn't exist. Terminating
 			//if logdir was supplied and is writable
 			if (new File(logDir).canWrite()){
 				FileWriter writer = new FileWriter(logDir+logFile+new SimpleDateFormat("yyyy_MM").format(new Date())+".log",true); //the true will append the new data
   				Date now=new Date();
-  				writer.append(now+" "+"Error while reading email settings. No file was found. Terminating.");
-//  				messenger.write("Error,"+dateFormat.format(new Date())+",Error while reading email settings. No file was found. Terminating.\n");
-//  				messenger.close();
-  				
+  				writer.append(now+" "+"Error while reading email settings. No file was found. Terminating.");		
 			}
 			System.exit(1);
 		}
@@ -523,11 +502,11 @@ try{
 			logDirectory.mkdirs();
 			
 			}
+			//get the system resources
 			notif.addMachineStat("83.212.86.161","Harvester");
-			System.out.println("Scrap");
 			readCityBudget();
 			notif.addMachineStat("83.212.86.161","Harvester");
-			System.out.println("ALL OK");
+			//push all messages to the database
 			notif.runInsert();
 			notif.finishExecution();
 		}
@@ -535,6 +514,7 @@ try{
 			System.out.println("Exception "+e.getMessage());
 		}
 	notif.runInsert();
+	notif.finishExecution();
 //		messenger.close();
 		System.exit(0);
 	
