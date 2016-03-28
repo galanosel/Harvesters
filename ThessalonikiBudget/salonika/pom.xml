@@ -40,12 +40,7 @@
 		<version>1.5.3</version>
 		<scope>compile</scope>
 	</dependency>
- 	
-   <dependency>
-	<groupId>org.gridkit.lab</groupId>
-	<artifactId>sigar-lib</artifactId>
-	<version>1.6.4</version>
-</dependency>
+
  
 	
   </dependencies>

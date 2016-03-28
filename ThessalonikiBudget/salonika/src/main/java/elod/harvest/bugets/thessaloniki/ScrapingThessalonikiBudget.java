@@ -1,12 +1,4 @@
 package elod.harvest.bugets.thessaloniki;
-/*
- java -jar /home/ilias/git/elod-salonikabudget/ThessBudget.jar
-/home/ilias/skaros/Dropbox/ThessHarvestMsng /mnt/4C1EAB314334DA2B/Cloud/Dropbox/SettingFiles/Authantication/EmailAuthentication.txt /home/ilias/skaros/MessengerDB.txt /home/ilias/Downloads/lib
- */
-
-/*
-"<table style=\"width:100%\"><tr><td>Jill</td><td>Smith</td><td>50</td></tr><tr><td>Eve</td><td>Jackson</td><td>94</td></tr></table> "
- */
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,8 +31,6 @@ import com.ui4j.api.dom.Document;
 import com.ui4j.api.dom.Element;
 import com.ui4j.api.dom.Select;
 
-import elod.tool.msg.Notifications;
-import org.hyperic.sigar.SigarException;
 
 
 public class ScrapingThessalonikiBudget {
@@ -76,8 +66,7 @@ static final String Budget_Url="http://www.thessaloniki.gr/egov/budget.html";
 	    private static String PASSWORD = "HarvestNotifier"; // GMail password
 	    private static String[] RECIPIENT ;//= {"skaros.ilias@gmail.com","skarosi@hotmail.com"};
 
-	    static Notifications notif;
-	    
+	   
 	    
 	/**
 	 * The function will create a new Document based on the page provided.
@@ -103,7 +92,7 @@ System.out.println(document.getBody());
 try{
 	System.out.println("YEAR"+year.getLength());
 }catch(Exception e){System.out.println("Exception1");
-}System.out.println("1c");
+}
 //try catch NullPointerException
         // select last year on list
         year.setSelectedIndex(year.getLength()-1);
@@ -173,9 +162,9 @@ try{
 	try {
 		writer = new PrintWriter(fileName, "UTF-16");
 	} catch (FileNotFoundException e){
-		notif.addMessage("Can not find "+fileName, "5", false);
+		  System.out.println("Can not find "+fileName);
 	}catch( UnsupportedEncodingException e) {
-		notif.addMessage("Unsupported Encoding on UTF-16", "5",false);
+		  System.out.println("Unsupported Encoding on UTF-16");
 	}
 //    write the column titles first
       if(typeIndex==1){
@@ -239,15 +228,11 @@ try{
             	//Default dir will be used.
         		expesnsesDir=new File(workingDir);
             	System.out.println("Error while Creating Expenses Directory. Default Directory will be used: "+expesnsesDir.toString());
-//            	notif.addError("Error while Creating Directory. Default Directory will be used: "+expesnsesDir.toString());
-            	notif.addMessage("Error while Creating Expenses Directory. Default Directory will be used: "+expesnsesDir.toString(), "3", false);
             	FileWriter writer = new FileWriter(logDir+logFile,true); //the true will append the new data
   				Date now=new Date();
   				errorMessage.append(now+" "+"Error while Creating Directory. Default Directory will be used: "+expesnsesDir.toString()+"\n");
   				writer.append(now+" "+"Error while Creating Directory. Default Directory will be used: "+expesnsesDir.toString()+"\n");
-//  				messenger.write("Error,"+dateFormat.format(new Date())+",Error while Creating Directory. Default Directory will be used: "+expesnsesDir.toString()+"\n");
-//  				messenger.flush();
-  				
+	
   				//set the sentMail flag to true, now an email will be sent
   				sentMail=true;
   				writer.flush();
@@ -263,7 +248,6 @@ try{
         		//Default dir will be used.
         		incomeDir=new File(workingDir);
         		System.out.println("Error while Creating Income Directory. Default Directory will be used: "+incomeDir.toString());
-        		notif.addMessage("Error while Creating Income Directory. Default Directory will be used: "+incomeDir.toString(), "3", false);
         		FileWriter writer = new FileWriter(logDir+logFile,true); //the true will append the new data
         		Date now=new Date();
         		errorMessage.append(now+" "+"Error while Creating Directory. Default Directory will be used: "+incomeDir.toString()+"\n");
@@ -303,21 +287,16 @@ try{
         		
         	}
         	System.out.println("File with expenses saved at"+expesnsesDir+"/"+fileName+".csv");
-        	notif.addMessage("File with expenses saved at"+expesnsesDir+"/"+fileName+".csv","1",false);
-        	notif.runInsert();
-        }catch(Exception e){
+          }catch(Exception e){
         	FileWriter writer = new FileWriter(logDir+logFile,true); //the true will append the new data
         	Date now=new Date();
         	errorMessage.append(now+" "+"Error while Creating Directory. Default Directory will be used: "+incomeDir.toString()+"\n");
 			writer.append(now+" "+"Error while creating the expenses file. "+e.getMessage()+"\n");
-			notif.addMessage("Error while creating the expenses file. "+e.getMessage(),"3",false);
-			notif.runInsert();
 			//set the sentMail flag to true, now an email will be sent
 				sentMail=true;
 			writer.flush();
 			writer.close();
         }
-        notif.runInsert();
         //Get the data for the income for the latest year
         try{
         	Thread.sleep(5000);
@@ -342,31 +321,20 @@ try{
         		incPass=true;
         	}
         	System.out.println("File with income saved at"+incomeDir+"/"+fileName+".csv");
-//        	messenger.write("Success,"+dateFormat.format(new Date())+",File with income saved at"+incomeDir+"/"+fileName+".csv\n");
-//        	messenger.flush();
-//        	notif.addSuccess("File with income saved at"+incomeDir+"/"+fileName+".csv");
-        	notif.addMessage("File with income saved at"+incomeDir+"/"+fileName+".csv","1",false);
-        	notif.runInsert();
         }catch(Exception e){
 			FileWriter writer = new FileWriter(logDir+logFile,true); //the true will append the new data
 			Date now=new Date();
 			errorMessage.append(now+" "+"Error while creating the income file. "+e.getMessage()+"\n"+e.getLocalizedMessage()+"\n"+e.getStackTrace());
 			writer.append(now+" "+"Error while creating the income file. "+e.getMessage()+"\n");
-			notif.addMessage("Error while creating the income file. "+e.getMessage(),"5",false);
-			notif.runInsert();
-//			messenger.write("Error,"+dateFormat.format(new Date())+",Error while creating the income file. "+e.getMessage()+"\n");
-//			messenger.flush();
-			//set the sentMail flag to true, now an email will be sent
+	//set the sentMail flag to true, now an email will be sent
 				sentMail=true;
 			writer.flush();
 			writer.close();
 		}
-       notif.finishExecution();
-       
+    
         if (incPass&&expPass){
         	//both files OK        	
-        	notif.addMessage("SUCCESS, ThessBudget files downloaded succesfull", "1", false);
-        	System.out.println("\nSUCCESS, ThessBudget files downloaded succesfull\n");
+     	System.out.println("\nSUCCESS, ThessBudget files downloaded succesfull\n");
         }
         else{
         	//one of the files not ok        	
@@ -374,15 +342,13 @@ try{
         		//the income file is OK
         		if(!expPass){
         			//expenses failed
-        		    notif.addMessage("ERROR, ThessBudget Harvest, income file downloaded properly, BUT expenses FAILED", "5", false);
-        		    System.out.println("\nERROR, ThessBudget Harvest, income file downloaded properly, BUT expenses FAILED\n");
+       		    System.out.println("\nERROR, ThessBudget Harvest, income file downloaded properly, BUT expenses FAILED\n");
         		    }      	
         	}else{
         		//income failed
         		if(!expPass){
         			//both failed
-        			notif.addMessage("ERROR, ThessBudget Harvest, income and expenses files FAILURE", "5", false);
-        			 System.out.println("\nERROR, ThessBudget Harvest, income and expenses files FAILURE\n");
+        		 System.out.println("\nERROR, ThessBudget Harvest, income and expenses files FAILURE\n");
         		}
         	}	
         }
@@ -415,9 +381,6 @@ try{
 	}
 	
 	public static void main(String[] args) throws Exception {   
-		//create a new messaging object
-		 notif=new Notifications("13","12", "Skaros","Thessaloniki Budget Harvester","SkarosIlias");
-	 
 		if(args.length<3){
 			System.out.println("Usage java -jar ThessBudget.jar [root/dir/to/save/files] [email setting file path] [messenger DB settings] [Sigar lib folder]");
 			System.exit(1);
@@ -427,10 +390,6 @@ try{
 		
 		if(!new File(args[2]).exists()){
 			System.out.println("messenger settings file doesnt exist");
-			
-		}else{
-			//set up the messaging settings
-			notif.DbCredentials(new File(args[2]));
 			
 		}
 		
@@ -502,20 +461,11 @@ try{
 			logDirectory.mkdirs();
 			
 			}
-			//get the system resources
-			notif.addMachineStat("83.212.86.161","Harvester");
 			readCityBudget();
-			notif.addMachineStat("83.212.86.161","Harvester");
-			//push all messages to the database
-			notif.runInsert();
-			notif.finishExecution();
 		}
 		catch(Exception e){
 			System.out.println("Exception "+e.getMessage());
 		}
-	notif.runInsert();
-	notif.finishExecution();
-//		messenger.close();
 		System.exit(0);
 	
 	}
